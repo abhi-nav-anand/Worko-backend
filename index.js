@@ -19,7 +19,6 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -32,19 +31,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(uploadsDir));
 
+// ✅ Check for MONGO_URI env var
+if (!process.env.MONGO_URI) {
+  console.error("❌ MONGO_URI is not set in environment variables.");
+  process.exit(1); // Stop server
+}
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {})
-  .then(() => console.log('MongoDB connected'))
+// ✅ MongoDB connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ MongoDB connected'))
   .catch(err => {
-    console.error('MongoDB connection error:', err.message);
-    process.exit(1);
+    console.error('❌ MongoDB connection error:', err.message);
+    process.exit(1); // Exit on failure
   });
 
-// Use candidate routes
+// Routes
 app.use('/candidates', candidateRoutes);
-
 app.use('/api/auth', authRoutes);
 app.use('/api/metrics', metricsRoutes);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Start server
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
