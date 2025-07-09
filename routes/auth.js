@@ -27,6 +27,7 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Login attempt:', { email, password });
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ error: 'Invalid credentials.' });
     const match = await bcrypt.compare(password, user.password);
