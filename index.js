@@ -34,10 +34,12 @@ app.use('/uploads', express.static(uploadsDir));
 
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/workio', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(process.env.MONGO_URI, {})
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err.message);
+    process.exit(1);
+  });
 
 // Use candidate routes
 app.use('/candidates', candidateRoutes);
